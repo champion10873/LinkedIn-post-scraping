@@ -25,7 +25,6 @@ class Services {
             api: "classic",
             category: "posts",
             keywords: keyword,
-            sort_by: "date",
             date_posted: "past_day",
           }
         );
@@ -37,7 +36,6 @@ class Services {
             api: "classic",
             category: "posts",
             keywords: keyword,
-            sort_by: "date",
             date_posted: "past_day",
           }
         );

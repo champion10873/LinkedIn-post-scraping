@@ -33,6 +33,7 @@ async function saveResult(posts) {
 }
 
 async function retrievePosts(keyword) {
+  console.log("Retrieving posts for", keyword);
   let cursor = "";
   let posts = [];
 
