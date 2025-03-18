@@ -2,6 +2,7 @@ const { keywords } = require("./config.js");
 const Service = require("./api.js");
 const fs = require("fs");
 const { parse } = require("json2csv");
+const cron = require("node-cron");
 
 let bannedPosts = [];
 
@@ -47,25 +48,32 @@ async function retrievePosts(keyword) {
   // Remove duplicated posts
   posts = posts.filter((post) => !bannedPosts.includes(post.id));
   console.log(posts.length, "posts after filter for", keyword);
-  posts[0].keyword = keyword;
 
-  bannedPosts = bannedPosts.concat(posts.map((post) => post.id));
-  console.log(bannedPosts.length, "banned posts");
+  if (posts.length > 0) {
+    posts[0].keyword = keyword;
+    bannedPosts = bannedPosts.concat(posts.map((post) => post.id));
+    console.log(bannedPosts.length, "banned posts");
 
-  const LINKEDIN_PERSONAL = "https://www.linkedin.com/in/";
-  const LINKEDIN_COMPANY = "https://www.linkedin.com/company/";
-  const exactPosts = posts.map((post) => {
-    return {
-      keyword: post.keyword,
-      text: post.text,
-      postUrl: post.share_url,
-      posterProfile: post.author.is_company
-        ? LINKEDIN_COMPANY + post.author.public_identifier
-        : LINKEDIN_PERSONAL + post.author.public_identifier,
-    };
-  });
+    const LINKEDIN_PERSONAL = "https://www.linkedin.com/in/";
+    const LINKEDIN_COMPANY = "https://www.linkedin.com/company/";
 
-  await saveResult(exactPosts);
+    const exactPosts = posts.map((post) => {
+      return {
+        keyword: post.keyword,
+        text: post.text,
+        postUrl: post.share_url,
+        posterName: post.author.name,
+        posterTitle: post.author.headline,
+        posterProfile: post.author.is_company
+          ? LINKEDIN_COMPANY + post.author.public_identifier
+          : LINKEDIN_PERSONAL + post.author.public_identifier,
+      };
+    });
+
+    await saveResult(exactPosts);
+  } else {
+    console.log("No new posts found for", keyword);
+  }
 }
 
 async function main() {
@@ -74,4 +82,9 @@ async function main() {
   }
 }
 
-main();
+cron.schedule("0 12 * * *", () => {
+  console.log("Running the script every day at noon");
+  main().catch((err) => console.error(err));
+});
+// Optionally, you can also run it immediately when the script starts
+main().catch((err) => console.error(err));
