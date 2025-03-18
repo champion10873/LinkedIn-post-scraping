@@ -14,7 +14,6 @@ class Services {
   }
 
   async searchPosts(keyword, cursor) {
-    console.log(keyword, cursor);
     try {
       if (cursor) {
         const response = await this.unipileApi.post(

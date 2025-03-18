@@ -3,3 +3,4 @@ config.js
 .env
 package-lock.json
 result_*.csv
+result_*.json
