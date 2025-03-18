@@ -8,7 +8,7 @@ let bannedPosts = [];
 
 async function saveResult(posts) {
   const currentDate = new Date().toISOString().split("T")[0];
-  const fileName = `./result_${currentDate}`;
+  const filePath = `./result_${currentDate}.csv`;
 
   // Save data to CSV file
   const csv = parse(posts);
@@ -16,20 +16,10 @@ async function saveResult(posts) {
   const dataToAppend = bom + csv + "\n";
 
   try {
-    fs.appendFileSync(`${fileName}.csv`, dataToAppend, { encoding: "utf8" });
-    console.log("CSV file saved successfully");
+    fs.appendFileSync(filePath, dataToAppend, { encoding: "utf8" });
+    // console.log("CSV file saved successfully");
   } catch (err) {
     console.error("Error writing to CSV file:", err);
-  }
-
-  // Save data to JSON file
-  const jsonContent = JSON.stringify(posts, null, 2); // Pretty print with 2 spaces
-
-  try {
-    fs.appendFileSync(`${fileName}.json`, jsonContent, { encoding: "utf8" });
-    console.log("JSON file saved successfully");
-  } catch (err) {
-    console.error("Error writing to file", err);
   }
 }
 
@@ -77,14 +67,24 @@ async function retrievePosts(keyword) {
 }
 
 async function main() {
+  // Initialize
+  bannedPosts = [];
+  const currentDate = new Date().toISOString().split("T")[0];
+  const filePath = `./result_${currentDate}.csv`;
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+  console.log("Running the script for", currentDate);
+
   for (const keyword of keywords) {
     await retrievePosts(keyword);
   }
 }
 
 cron.schedule("0 12 * * *", () => {
-  console.log("Running the script every day at noon");
   main().catch((err) => console.error(err));
 });
+
+console.log("This script is running every day at 12:00 PM");
 // Optionally, you can also run it immediately when the script starts
-main().catch((err) => console.error(err));
+// main().catch((err) => console.error(err));
