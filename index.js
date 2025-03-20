@@ -11,7 +11,12 @@ async function saveResult(posts) {
   const filePath = `./result_${currentDate}.csv`;
 
   // Save data to CSV file
-  const csv = parse(posts);
+  let csv;
+  if (fs.existsSync(filePath)) {
+    csv = parse(posts, { header: false });
+  } else {
+    csv = parse(posts);
+  }
   const bom = "\ufeff"; // UTF-8 BOM
   const dataToAppend = bom + csv + "\n";
 
@@ -81,10 +86,11 @@ async function main() {
   }
 }
 
-cron.schedule("0 12 * * *", () => {
-  main().catch((err) => console.error(err));
-});
+// cron.schedule("0 12 * * *", () => {
+//   main().catch((err) => console.error(err));
+// });
 
-console.log("This script is running every day at 12:00 PM");
+// console.log("This script is running every day at 12:00 PM");
+
 // Optionally, you can also run it immediately when the script starts
-// main().catch((err) => console.error(err));
+main().catch((err) => console.error(err));
