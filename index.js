@@ -3,6 +3,7 @@ const Service = require("./api.js");
 const fs = require("fs");
 const { parse } = require("json2csv");
 const cron = require("node-cron");
+const sendFile = require("./sendFile.js");
 
 let bannedPosts = [];
 
@@ -84,6 +85,9 @@ async function main() {
   for (const keyword of keywords) {
     await retrievePosts(keyword);
   }
+
+  await sendFile(currentDate);
+  console.log("Sent file for", currentDate);
 }
 
 // cron.schedule("0 12 * * *", () => {
