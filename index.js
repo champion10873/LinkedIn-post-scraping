@@ -35,9 +35,14 @@ async function retrievePosts(keyword) {
   let posts = [];
 
   while (cursor !== null) {
-    const response = await Service.searchPosts(keyword, cursor);
-    posts = posts.concat(response.items);
-    cursor = response.cursor;
+    try {
+      const response = await Service.searchPosts(keyword, cursor);
+      posts = posts.concat(response.items);
+      cursor = response.cursor;
+    } catch (error) {
+      console.log("Waiting for 5 minute...", cursor);
+      await new Promise((resolve) => setTimeout(resolve, 5 * 60 * 1000));
+    }
   }
   console.log(posts.length, "posts for", keyword);
 
@@ -90,11 +95,11 @@ async function main() {
   console.log("Sent file for", currentDate);
 }
 
-// cron.schedule("0 12 * * *", () => {
-//   main().catch((err) => console.error(err));
-// });
+cron.schedule("0 3 * * *", () => {
+  main().catch((err) => console.error(err));
+});
 
-// console.log("This script is running every day at 12:00 PM");
+console.log("This script is running every day at 3:00 AM(10:00 AM UTC)");
 
 // Optionally, you can also run it immediately when the script starts
-main().catch((err) => console.error(err));
+// main().catch((err) => console.error(err));

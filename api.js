@@ -42,7 +42,7 @@ class Services {
         return response.data;
       }
     } catch (error) {
-      console.error("Error searching posts:", error);
+      console.error("Error searching posts:", error.status);
       throw error;
     }
   }
