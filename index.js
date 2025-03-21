@@ -37,6 +37,9 @@ async function retrievePosts(keyword) {
   while (cursor !== null) {
     try {
       const response = await Service.searchPosts(keyword, cursor);
+      if (response.items.length === 0) {
+        break;
+      }
       posts = posts.concat(response.items);
       cursor = response.cursor;
     } catch (error) {
