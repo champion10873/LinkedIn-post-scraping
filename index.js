@@ -88,7 +88,7 @@ async function main() {
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
   }
-  console.log("Running the script for", currentDate);
+  console.log(`-------------------- Running script for ${currentDate} --------------------`);
 
   for (const keyword of keywords) {
     await retrievePosts(keyword);
